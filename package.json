@@ -11,6 +11,7 @@
   "author": "chicopalermo <franciscoctism@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "@discordjs/rest": "^1.0.1",
     "discord.js": "^14.0.1",
     "dotenv": "^16.0.1",
     "mongoose": "^6.4.4",
