@@ -1,5 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { ChannelType } = require('discord.js');
+const { ChannelType, MessageCollector } = require('discord.js');
+const momentTimezone = require('moment-timezone');
+const Message = require('../db/models/Message');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -10,6 +12,12 @@ module.exports = {
             .setName('channel')
             .setDescription('channel the massage should be sent to')
             .addChannelTypes(ChannelType.GuildText)
+            .setRequired(true)
+        )
+        .addStringOption((option) =>
+            option
+            .setName('message')
+            .setDescription('message that should be scheduled')
             .setRequired(true)
         )
         .addStringOption((option) =>
@@ -39,6 +47,34 @@ module.exports = {
             .setRequired(true)
         ),
 	async execute(interaction) {
-		await interaction.reply('Pong!');
+		const targetChannel = interaction.options.getChannel('channel');
+        const messageContent = interaction.options.getString('message');
+        const [ date, time ] = interaction.options.getString('date').split(' ');
+        const period = interaction.options.getString('period');
+        const timezone = interaction.options.getString('timezone');
+
+        let checkDate = new Date(`${date} ${time}`);
+
+        if(!(checkDate instanceof Date) || isNaN(checkDate)) {
+            interaction.reply('Invalid Date Format');
+            return;
+        }
+        
+        const targetDate = momentTimezone.tz(
+            `${date} ${time} ${period}`,
+            'YYYY-MM-DD HH:mm A',
+            timezone
+        );
+        
+        interaction.reply('Message scheduled!');
+
+        const message = {
+            channelId: targetChannel.id,
+            guildId: interaction.guild.id,
+            content: messageContent,
+            date: targetDate.valueOf()
+        };
+
+        await Message.create(message);
 	},
 };

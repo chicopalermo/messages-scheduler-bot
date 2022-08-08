@@ -14,7 +14,10 @@
     "@discordjs/rest": "^1.0.1",
     "discord.js": "^14.0.1",
     "dotenv": "^16.0.1",
+    "moment-timezone": "^0.5.34",
     "mongoose": "^6.4.4",
-    "nodemon": "^2.0.19"
+    "node-cron": "^3.0.1",
+    "nodemon": "^2.0.19",
+    "uuid": "^8.3.2"
   }
 }

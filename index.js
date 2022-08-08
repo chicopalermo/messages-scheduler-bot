@@ -2,9 +2,11 @@ const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const {connectToDatabase} = require('./src/db/connection');
 const fs = require('node:fs');
 const path = require('node:path');
+const { findMessages } = require('./src/cron/sendMessages');
+
 require('dotenv').config();
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds], partials: ["MESSAGE", "CHANNEL"]});
 client.commands = new Collection();
 
 const commandsPath = path.join(__dirname, 'src/commands');
@@ -19,6 +21,7 @@ for (const file of commandFiles) {
 client.on('ready', () => {
     console.log("Bot online!");
     connectToDatabase(process.env.URI);
+	findMessages(client);
 });
 
 client.on('interactionCreate', async interaction => {
